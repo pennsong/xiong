@@ -26,7 +26,7 @@
 		<h1>功能模块</h1>
 	</div>
 	<div class="span-64 last">
-		<a href="{site_url('sckb')}">生产看板</a>|<a href='#'>生产任务管理</a>|<a href='#'>测试数据查询</a>
+		<a href="{site_url('sckb')}">生产看板</a>|<a href='#'>生产任务管理</a>|<a href="{site_url('cssj')}">测试数据查询</a>
 	</div>
 </div>
 <div class="prepend-top span-64 last">

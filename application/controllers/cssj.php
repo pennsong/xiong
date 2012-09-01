@@ -1,7 +1,7 @@
 <?php
 if (!defined('BASEPATH'))
 	exit('No direct script access allowed');
-class Cssj extends CI_Controller
+class Cssj extends CW_Controller
 {
 	function __construct()
 	{
@@ -36,7 +36,6 @@ class Cssj extends CI_Controller
 
 	function index()
 	{
-		$this->output->enable_profiler(TRUE);
 		$param = $this->uri->uri_to_assoc();
 		$timeFrom = isset($param['timeFrom']) ? $param['timeFrom'] : null;
 		$timeTo = isset($param['timeTo']) ? $param['timeTo'] : null;
@@ -102,21 +101,25 @@ class Cssj extends CI_Controller
 		{
 			$sqlSn = " AND sn = '$sn'";
 		}
-		$tmpRes = $this->db->query("SELECT a.testTime, a.testStation, a.tester, a.productType, a.sn, a.result, b.name testStationName, c.employeeId, d.name productTypeName FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
+		$tmpRes = $this->db->query("SELECT a.id, a.testTime, a.testStation, a.tester, a.productType, a.sn, a.result, b.name testStationName, c.employeeId, d.name productTypeName FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
 		$tmpArray = $tmpRes->result_array();
+		$this->smarty->assign('productTestList', $tmpArray);
+		$this->smarty->display('cssj.tpl');
 	}
 
 	public function getTestItemResult($productTestInfo)
 	{
-		$tmpRes = $this->db->query("SELECT * FROM testItemResult WHERE productTestInfo = ?", $productTestInfo);
+		$tmpRes = $this->db->query("SELECT a.id, a.img, b.name testItemName FROM testItemResult a JOIN testItem b ON a.testItem = b.id WHERE productTestInfo = ?", $productTestInfo);
 		$testItemResultArray = $tmpRes->result_array();
 		foreach ($testItemResultArray as &$item)
 		{
 			$tmpRes = $this->db->query("SELECT * FROM testItemMarkValue WHERE testItemResult = ?", $item['id']);
 			$testItemMarkValueArray = $tmpRes->result_array();
-			$item['$testItemMarkValueArray'] = $testItemMarkValueArray;
+			$item['testItemMarkValueArray'] = $testItemMarkValueArray;
 		}
-		print_r($testItemResultArray);
+		$this->smarty->assign('productTestInfo', $productTestInfo);
+		$this->smarty->assign('testItemResultList', $testItemResultArray);
+		$this->smarty->display('cssj_testItem.tpl');
 	}
 
 }
