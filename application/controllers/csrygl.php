@@ -66,36 +66,44 @@ class Csrygl extends CI_Controller
 		print_r($tmpArray);
 	}
 
-	function testerWorkLoad($tester, $dateFrom = null, $dateTo = null)
+	function testerWorkLoad($tester)
 	{
-		//处理where条件
-		$sqlDateFrom = "";
-		$sqlDateTo = "";
-		if ($dateFrom != null)
-		{
-			if ($this->_checkDateFormat($dateFrom))
-			{
-				$sqlDateFrom = " AND testTime >= '$dateFrom'";
-			}
-			else
-			{
-				$sqlDateFrom = " AND 0";
-			}
-		}
-		if ($dateTo != null)
-		{
-			if ($this->_checkDateFormat($dateTo))
-			{
-				$sqlDateTo = " AND testTime <= '$dateTo'";
-			}
-			else
-			{
-				$sqlDateTo = " AND 0";
-			}
-		}
-		$tmpRes = $this->db->query("SELECT CONCAT(LPAD(HOUR(MAX(testTime)), 2, '0'),':',LPAD(MINUTE(MAX(testTime)), 2, '0')) maxT, CONCAT(LPAD(HOUR(MIN(testTime)), 2, '0'),':',LPAD(MINUTE(MIN(testTime)), 2, '0')) minT, DATE(testTime) dateValue FROM productTestInfo WHERE tester = ?".$sqlDateFrom.$sqlDateTo." GROUP BY dateValue ORDER BY dateValue", array($tester));
+		//取得测试员名字
+		$tmpRes = $this->db->query("SELECT name FROM tester WHERE id = ?", array($tester));
+		$testerName = $tmpRes->first_row()->name;
+		$jsonData['testerName'] = $testerName;
+		$tmpRes = $this->db->query("SELECT CONCAT(LPAD(HOUR(MAX(testTime)), 2, '0'),':',LPAD(MINUTE(MAX(testTime)), 2, '0')) maxT, CONCAT(LPAD(HOUR(MIN(testTime)), 2, '0'),':',LPAD(MINUTE(MIN(testTime)), 2, '0')) minT, CONCAT(UNIX_TIMESTAMP(CONCAT(DATE(testTime), ' 00:00:00')) + 28800, '000') testDate FROM productTestInfo WHERE tester = ? GROUP BY testDate ORDER BY testDate", array($tester));
 		$tmpArray = $tmpRes->result_array();
-		print_r($tmpArray);
+		foreach ($tmpArray as $item)
+		{
+			$jsonData['data'][] = array(
+				(int)$item['testDate'],
+				(int)$item['maxT'],
+				(int)$item['minT'],
+				(int)$item['maxT'],
+				(int)$item['minT'],
+				(int)($item['maxT'] - $item['minT'])
+			);
+		}
+		echo json_encode($jsonData);
+	}
+
+	function testerPerformance($tester)
+	{
+		//取得测试员名字
+		$tmpRes = $this->db->query("SELECT name FROM tester WHERE id = ?", array($tester));
+		$testerName = $tmpRes->first_row()->name;
+		$jsonData['testerName'] = $testerName;
+		$tmpRes = $this->db->query("SELECT CONCAT(UNIX_TIMESTAMP(CONCAT(DATE(testTime), ' 00:00:00')) + 28800, '000') testDate, count(*) num FROM `productTestInfo` WHERE tester = ? AND result = 1 GROUP BY testDate", array($tester));
+		$tmpArray = $tmpRes->result_array();
+		foreach ($tmpArray as $item)
+		{
+			$jsonData['data'][] = array(
+				(int)$item['testDate'],
+				(int)$item['num']
+			);
+		}
+		echo json_encode($jsonData);
 	}
 
 }
