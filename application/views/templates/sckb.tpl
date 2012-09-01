@@ -56,7 +56,7 @@
 			{
 				formatter : function()
 				{
-					return '<b>产量</b>:' + this.x + '<br/>' + '<b>时间点</b>: ' + (this.y) + '点';
+					return '<b>产量</b>:' + this.y + '<br/>' + '<b>时间点</b>: ' + (this.x) + '点';
 				}
 			},
 			series : []
@@ -93,13 +93,13 @@
 		chart = new Highcharts.Chart(options);
 	}
 
-	function setOkNum()
+	function setPassRate()
 	{
 		var options =
 		{
 			chart :
 			{
-				renderTo : 'okNum',
+				renderTo : 'passRate',
 				type : 'column'
 			},
 			title :
@@ -123,6 +123,7 @@
 			yAxis :
 			{
 				min : 0,
+				max : 100,
 				title :
 				{
 					text : '通过率'
@@ -136,7 +137,7 @@
 			{
 				formatter : function()
 				{
-					return '<b>产量</b>:' + this.x + '<br/>' + '<b>时间点</b>: ' + (this.y) + '点';
+					return '<b>通过率</b>:' + this.y + '%<br/>' + '<b>时间点</b>: ' + (this.x) + '点';
 				}
 			},
 			series : []
@@ -165,8 +166,8 @@
 				}
 			}
 		};
-		/*{foreach $okNumList as $item}*/
-		options.xAxis.categories.push(/*{counter name=okNum}*/);
+		/*{foreach $passRateList as $item}*/
+		options.xAxis.categories.push(/*{counter name=passRateNum}*/);
 		series.data.push(/*{$item}*/);
 		/*{/foreach}*/
 		options.series.push(series);
@@ -177,13 +178,23 @@
 	$(document).ready(function()
 	{
 		setTotalNum();
-		setOkNum();
+		setPassRate();
 	}); 
 </script>
 <!--{/block}-->
 <!--{block name=subBody}-->
-<div id="dateNum" class="prepend-1 span-30 dataDiv">
+<div class="prepend-1 span-63 last">
+	<form method="post" action="{site_url('sckb')}">
+		日期:
+		{html_select_date start_year="-10" month_format="%m" field_order=YMD time=$theDate|default:'' }
+		测试站点:{html_options name=testStation options=$testStationList selected=$smarty.post.testStation|default:''}
+		<input type="submit" value="查找">
+	</form>
 </div>
-<div id="okNum" class="prepend-1 span-30 dataDiv">
+<div class="span-64 last">
+	<div id="dateNum" class="prepend-1 span-30 dataDiv">
+	</div>
+	<div id="passRate" class="prepend-1 span-30 dataDiv">
+	</div>
 </div>
 <!--{/block}-->

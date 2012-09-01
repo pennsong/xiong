@@ -12,9 +12,16 @@ class Sckb extends CW_Controller
 	private function _init()
 	{
 		//取得测试站点
-		$tmpRes = $this->db->query("SELECT * FROM testStation");
-		$testStationArray = $tmpRes->result_array();
-		$this->smarty->assign('testStationList', $testStationArray);
+		$tmpRes = $this->db->query("SELECT * FROM testStation ORDER BY name");
+		$testStationList = array(''=>'请选择');
+		if ($tmpRes->num_rows() > 0)
+		{
+			foreach ($tmpRes->result() as $row)
+			{
+				$testStationList[$row->id] = $row->name;
+			}
+		}
+		$this->smarty->assign('testStationList', $testStationList);
 	}
 
 	private function _checkDateFormat($date)
@@ -32,16 +39,18 @@ class Sckb extends CW_Controller
 			return false;
 	}
 
-	function index($date = null, $testStation = null)
+	function index()
 	{
+		$date = $this->input->post('Date_Year').'-'.$this->input->post('Date_Month').'-'.sprintf("%02d", $this->input->post('Date_Day'));
 		if (!($this->_checkDateFormat($date)))
 		{
 			$date = date("Y-m-d");
 		}
+		$this->smarty->assign('theDate', $date);
 		$sqlTestStation = '';
-		if ($testStation != '')
+		if ($this->input->post('testStation') != '')
 		{
-			$sqlTestStation = "AND testStation = '".$testStation."'";
+			$sqlTestStation = "AND testStation = '".$this->input->post('testStation')."'";
 		}
 		$tmpRes = $this->db->query("SELECT count(*) num, HOUR(testTime) hour FROM `productTestInfo` WHERE testTime >= '".$date." 00:00:00' AND testTime <= '".$date." 23:59:59'".$sqlTestStation." GROUP BY hour");
 		$totalNumArray = $tmpRes->result_array();
@@ -55,20 +64,21 @@ class Sckb extends CW_Controller
 		{
 			$totalNumList[$item['hour']] = $item['num'];
 		}
-		$tmpRes = $this->db->query("SELECT count(*) num, HOUR(testTime) hour FROM `productTestInfo` WHERE result = 'TRUE' AND testTime >= '".$date." 00:00:00' AND testTime <= '".$date." 23:59:59'".$sqlTestStation." GROUP BY hour");
+		$tmpRes = $this->db->query("SELECT count(*) num, HOUR(testTime) hour FROM `productTestInfo` WHERE result = 1 AND testTime >= '".$date." 00:00:00' AND testTime <= '".$date." 23:59:59'".$sqlTestStation." GROUP BY hour");
 		$okNumArray = $tmpRes->result_array();
 		//添加时间标签
-		$okNumList = array();
+		$passRateList = array();
 		for ($i = 0; $i < 24; $i++)
 		{
-			$okNumList[$i] = 0;
+			$passRateList[$i] = 0;
 		}
 		foreach ($okNumArray as $item)
 		{
-			$okNumList[$item['hour']] = $item['num'];
+			$passRateList[$item['hour']] = ($item['num'] * 100) / $totalNumList[$item['hour']];
 		}
+		//计算通过率
 		$this->smarty->assign('totalNumList', $totalNumList);
-		$this->smarty->assign('okNumList', $okNumList);
+		$this->smarty->assign('passRateList', $passRateList);
 		$this->smarty->display('sckb.tpl');
 	}
 
