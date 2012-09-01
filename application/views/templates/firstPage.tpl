@@ -3,6 +3,11 @@
 <title>{$title}</title>
 <!--{/block}-->
 <!--{block name=style}-->
+<style type="text/css" media="screen">
+	div.diagram1 {
+		height: 400px;
+	}
+</style>
 <!--{foreach $css_files as $file}-->
 <link type="text/css" rel="stylesheet" href="{$file}" />
 <!--{/foreach}-->
@@ -48,11 +53,7 @@
 					series : [
 					{
 						name : '测试绩效',
-						data : jsonData['data'],
-						tooltip :
-						{
-							valueDecimals : 2
-						}
+						data : jsonData['data']
 					}]
 				});
 			});

@@ -222,6 +222,7 @@ class firstPage extends CW_Controller
 
 	function index()
 	{
+		$this->smarty->assign('title', '首页');
 		$this->smarty->assign('css_files', array());
 		$this->smarty->assign('js_files', array());
 		$this->smarty->assign('output', '');

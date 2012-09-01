@@ -80,11 +80,11 @@
 	<body class="cldn">
 		<div class="container">
 			<div class="span-64 last">
-				  <img class="" src="{base_url()}resource/img/logo.png"/>
+				  <img class="logo" src="{base_url()}resource/img/logo.png"/>
 			</div>
 			<div class="clear prepend-19 last append-bottom20">
 				<div>
-					<span class="cldnH1">欢迎来到CLDN</span>
+					<span class="cldnH1">欢迎来到Xiong系统</span>
 				</div>
 			</div>
 			<form id="locLoginForm" action="{site_url('login/validateLogin')}" method="post">
@@ -112,19 +112,6 @@
 						<div class="locDefaultStr defaultStr1 locUserNameDefaultStr">
 							请输入密码
 						</div>
-					</div>
-				</div>
-				<div class="clear prepend-19 span-6">
-					<a class="line1" href="{site_url('visitorMain/noLogin_index')}">先进去看看</a>
-				</div>
-				<div class="clear prepend-19 append-bottom5">
-					<div class="span-6 label1">
-						请选择您的身份
-					</div>
-				</div>
-				<div class="clear prepend-19 append-bottom20 locUserType">
-					<div class="span-15 label1">
-						{html_radios name='type' values=$typeId output=$typeName labels=FALSE selected=$type|default:1}
 					</div>
 				</div>
 				<div class="clear prepend-19">

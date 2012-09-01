@@ -34,16 +34,15 @@ class Cssj extends CW_Controller
 		return preg_match($pattern, $time);
 	}
 
-	function index()
+	function index($offset = 0, $limit = 10)
 	{
-		$param = $this->uri->uri_to_assoc();
-		$timeFrom = isset($param['timeFrom']) ? $param['timeFrom'] : null;
-		$timeTo = isset($param['timeTo']) ? $param['timeTo'] : null;
-		$testResult = isset($param['testResult']) ? $param['testResult'] : null;
-		$testStationName = urldecode(isset($param['testStationName']) ? $param['testStationName'] : null);
-		$productTypeName = urldecode(isset($param['productTypeName']) ? $param['productTypeName'] : null);
-		$employeeId = isset($param['employeeId']) ? $param['employeeId'] : null;
-		$sn = isset($param['sn']) ? $param['sn'] : null;
+		$timeFrom = emptyToNull($this->input->post('timeFrom'));
+		$timeTo = emptyToNull($this->input->post('timeTo'));
+		$testResult = emptyToNull($this->input->post('testResult'));
+		$testStationName = emptyToNull($this->input->post('testStationName'));
+		$productTypeName = emptyToNull($this->input->post('productTypeName'));
+		$employeeId = emptyToNull($this->input->post('employeeId'));
+		$sn = emptyToNull($this->input->post('sn'));
 		//处理where条件
 		$sqlTimeFrom = "";
 		$sqlTimeTo = "";
@@ -54,9 +53,9 @@ class Cssj extends CW_Controller
 		$sqlSn = "";
 		if ($timeFrom != null)
 		{
-			if ($this->_checkTime($timeFrom))
+			if ($this->_checkTime($timeFrom." 00:00:00"))
 			{
-				$sqlTimeFrom = " AND testTime >= '$timeFrom'";
+				$sqlTimeFrom = " AND testTime >= '$timeFrom"." "."'";
 			}
 			else
 			{
@@ -65,9 +64,9 @@ class Cssj extends CW_Controller
 		}
 		if ($timeTo != null)
 		{
-			if ($this->_checkTime($timeTo))
+			if ($this->_checkTime($timeTo." 23:59:59"))
 			{
-				$sqlTimeTo = " AND testTime <= '$timeTo'";
+				$sqlTimeTo = " AND testTime <= '$timeTo"." "."23:59:59'";
 			}
 			else
 			{
@@ -101,9 +100,22 @@ class Cssj extends CW_Controller
 		{
 			$sqlSn = " AND sn = '$sn'";
 		}
-		$tmpRes = $this->db->query("SELECT a.id, a.testTime, a.testStation, a.tester, a.productType, a.sn, a.result, b.name testStationName, c.employeeId, d.name productTypeName FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
+		//处理分页
+		$this->load->library('pagination');
+		$config['base_url'] = site_url('cssj/index/');
+		$config['uri_segment'] = 3;
+		//取得符合条件人才信息条数
+		$tmpRes = $this->db->query("SELECT COUNT(*) num FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
+		$config['total_rows'] = $tmpRes->first_row()->num;
+		$config['per_page'] = '10';
+		$this->pagination->initialize($config);
+		$tmpRes = $this->db->query("SELECT a.id, a.testTime, a.testStation, a.tester, a.productType, a.sn, a.result, b.name testStationName, c.employeeId, d.name productTypeName FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn." LIMIT ?, ?", array(
+			(int)$offset,
+			(int)$limit
+		));
 		$tmpArray = $tmpRes->result_array();
 		$this->smarty->assign('productTestList', $tmpArray);
+		$this->smarty->assign('title', '测试数据查询');
 		$this->smarty->display('cssj.tpl');
 	}
 

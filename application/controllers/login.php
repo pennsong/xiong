@@ -13,21 +13,6 @@ class Login extends CW_Controller
 	public function index()
 	{
 		$this->session->sess_destroy();
-		//set user type
-		$this->smarty->assign('typeId', array(
-			'1',
-			'2',
-			'3'
-		));
-		$this->smarty->assign('typeName', array(
-			'普通用户',
-			'管理员',
-			'超级管理员'
-		));
-		if ($this->input->cookie('type'))
-		{
-			$this->smarty->assign('type', $this->input->cookie('type'));
-		}
 		$this->smarty->display('login.tpl');
 	}
 
@@ -37,10 +22,9 @@ class Login extends CW_Controller
 		redirect(base_url()."index.php/login");
 	}
 
-	public function login2($userName = null, $password = null, $type = 1)
+	public function login2($userName = null, $password = null)
 	{
 		$this->session->sess_destroy();
-		$_POST['type'] = $type;
 		$_POST['userName'] = $userName;
 		$_POST['password'] = $password;
 		$this->validateLogin();
@@ -53,14 +37,7 @@ class Login extends CW_Controller
 		{
 			//登录成功
 			$this->input->set_cookie('type', $this->input->post('type'), 3600 * 24 * 30);
-			if ($this->session->userdata('type') == 'user')
-			{
-				redirect(base_url().'index.php/userMain');
-			}
-			else if ($this->session->userdata('type') == 'uploader' || $this->session->userdata('type') == 'admin')
-			{
-				redirect(base_url().'index.php/uploaderMain');
-			}
+			redirect(base_url().'index.php/firstPage');
 		}
 		else
 		{
@@ -153,7 +130,7 @@ class Login extends CW_Controller
 			$var = $result;
 			return FALSE;
 		}
-		else if ($this->input->post('type') == 1)
+		else
 		{
 			$tmpRes = $this->db->query('SELECT * FROM user WHERE userName = ?', strtolower($this->input->post('userName')));
 			if ($tmpRes)
@@ -163,10 +140,8 @@ class Login extends CW_Controller
 					$tmpArr = $tmpRes->first_row('array');
 					if ($tmpArr['password'] == strtolower($this->input->post('password')))
 					{
-						$this->session->set_userdata('userName', strtolower($this->input->post('userName')));
+						$this->session->set_userdata('username', strtolower($this->input->post('userName')));
 						$this->session->set_userdata('userId', $tmpArr['id']);
-						$this->session->set_userdata('type', 'user');
-						$this->session->set_userdata('point', $tmpArr['point']);
 						return TRUE;
 					}
 					else
@@ -190,89 +165,6 @@ class Login extends CW_Controller
 				return FALSE;
 			}
 		}
-		else if ($this->input->post('type') == 2)
-		{
-			$tmpRes = $this->db->query('SELECT * FROM uploader WHERE userName = ?', strtolower($this->input->post('userName')));
-			if ($tmpRes)
-			{
-				if ($tmpRes->num_rows() > 0)
-				{
-					$tmpArr = $tmpRes->first_row('array');
-					if ($tmpArr['password'] == strtolower($this->input->post('password')))
-					{
-						$this->session->set_userdata('userName', strtolower($this->input->post('userName')));
-						$this->session->set_userdata('userId', $tmpArr['id']);
-						$this->session->set_userdata('type', 'uploader');
-						return TRUE;
-					}
-					else
-					{
-						//密码错误
-						$var = "*密码错误，请仔细检查";
-						return FALSE;
-					}
-				}
-				else
-				{
-					//用户名不存在
-					$var = "*无此用户,请重新输入";
-					return FALSE;
-				}
-			}
-			else
-			{
-				//查询失败
-				$var = "*系统繁忙，请稍后尝试进入";
-				return FALSE;
-			}
-		}
-		else if ($this->input->post('type') == 3)
-		{
-			$tmpRes = $this->db->query('SELECT * FROM admin WHERE userName = ?', strtolower($this->input->post('userName')));
-			if ($tmpRes)
-			{
-				if ($tmpRes->num_rows() > 0)
-				{
-					$tmpArr = $tmpRes->first_row('array');
-					if ($tmpArr['password'] == strtolower($this->input->post('password')))
-					{
-						$this->session->set_userdata('userName', strtolower($this->input->post('userName')));
-						$this->session->set_userdata('userId', $tmpArr['id']);
-						$this->session->set_userdata('type', 'admin');
-						return TRUE;
-					}
-					else
-					{
-						//密码错误
-						$var = "*密码错误，请仔细检查";
-						return FALSE;
-					}
-				}
-				else
-				{
-					//用户名不存在
-					$var = "*无此用户,请重新输入";
-					return FALSE;
-				}
-			}
-			else
-			{
-				//查询失败
-				$var = "*系统繁忙，请稍后尝试进入";
-				return FALSE;
-			}
-		}
-		else
-		{
-			//错误的用户类型
-			$var = "*用户类型不合法";
-			return FALSE;
-		}
-	}
-
-	public function help()
-	{
-		$this->smarty->display('loginHelp.tpl');
 	}
 
 }

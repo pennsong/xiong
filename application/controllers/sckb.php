@@ -79,6 +79,7 @@ class Sckb extends CW_Controller
 		//计算通过率
 		$this->smarty->assign('totalNumList', $totalNumList);
 		$this->smarty->assign('passRateList', $passRateList);
+		$this->smarty->assign('title', "生产看板");
 		$this->smarty->display('sckb.tpl');
 	}
 
