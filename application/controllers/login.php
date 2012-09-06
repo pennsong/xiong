@@ -167,6 +167,87 @@ class Login extends CW_Controller
 		}
 	}
 
+	public function clientLogin($username = null, $password = null, $equipmentSn = null)
+	{
+		$this->load->helper('xml');
+		$dom = xml_dom();
+		//检查用户名密码
+		$tmpRes = $this->db->query('SELECT a.id testerId, a.name testerName, a.employeeId, b.id testRightId, b.name testRightName FROM tester a JOIN testRight b ON a.testRight = b.id WHERE a.employeeId = ? AND password = ?', array(
+			$username,
+			$password
+		));
+		if ($tmpRes->num_rows() > 0)
+		{
+			$tmpArray = $tmpRes->first_row('array');
+			//取得测试员姓名,员工号,权限
+			$username = xml_add_child($dom, 'username');
+			xml_add_child($username, 'result', 'true');
+			xml_add_child($username, 'name', $tmpArray['testerName']);
+			xml_add_child($username, 'id', $tmpArray['testerId']);
+			xml_add_child($username, 'test_right_id', $tmpArray['testRightId']);
+			xml_add_child($username, 'test_right_name', $tmpArray['testRightName']);
+			//根据$equipmentSn取得站点id,站点名称
+			$tmpRes = $this->db->query('SELECT * FROM testStation WHERE equipmentSn = ?', array($equipmentSn));
+			if ($tmpRes->num_rows() > 0)
+			{
+				$testStation = xml_add_child($dom, 'test_station');
+				xml_add_child($testStation, 'result', 'true');
+				xml_add_child($testStation, 'id', $tmpRes->first_row()->id);
+				xml_add_child($testStation, 'name', $tmpRes->first_row()->name);
+			}
+			else
+			{
+				//没有查到站点
+				$testStation = xml_add_child($dom, 'test_station');
+				xml_add_child($testStation, 'result', 'false');
+			}
+			//取得产品类型列表
+			$tmpRes = $this->db->query('SELECT * FROM productType ORDER BY id');
+			if ($tmpRes->num_rows() > 0)
+			{
+				$productTestCase = xml_add_child($dom, 'product_test_case');
+				xml_add_child($productTestCase, 'result', 'true');
+				$tmpProductTypeArray = $tmpRes->result_array();
+				foreach ($tmpProductTypeArray as $productTypeItem)
+				{
+					$productType = xml_add_child($productTestCase, 'product_type');
+					xml_add_child($productType, 'id', $productTypeItem['id']);
+					xml_add_child($productType, 'name', $productTypeItem['name']);
+					//取得产品测试案例内容
+					$tmpRes = $this->db->query('SELECT a.testItem, b.name testItemName, a.stateFile FROM productTypeTestCase a JOIN testItem b ON a.testItem = b.id WHERE a.productType = ? ORDER BY a.testItem', array($productTypeItem['id']));
+					if ($tmpRes->num_rows() > 0)
+					{
+						$tmpTestItemArray = $tmpRes->result_array();
+						$testItem = xml_add_child($productType, 'test_item');
+						xml_add_child($testItem, 'result', 'true');
+						foreach ($tmpTestItemArray as $testItemItem)
+						{
+							xml_add_child($testItem, 'id', $testItemItem['testItem']);
+							xml_add_child($testItem, 'name', $testItemItem['testItemName']);
+							xml_add_child($testItem, 'state_file', $testItemItem['stateFile']);
+						}
+					}
+					else
+					{
+						$testItem = xml_add_child($productType, 'test_item');
+						xml_add_child($testItem, 'result', 'false');
+					}
+				}
+			}
+			else
+			{
+				$productTestCase = xml_add_child($dom, 'product_test_case');
+				xml_add_child($productTestCase, 'result', 'false');
+			}
+		}
+		else
+		{
+			$username = xml_add_child($dom, 'username');
+			xml_add_child($username, 'result', 'false');
+		}
+		xml_print($dom);
+	}
+
 }
 
 /*end*/

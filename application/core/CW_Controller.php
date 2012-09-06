@@ -40,40 +40,26 @@ class CW_Controller extends CI_Controller
 
 	public function _checkLogin()
 	{
-		return TRUE;
-		
 		if ($this->uri->segment(1) == 'login' || strpos($this->uri->segment(2), 'noLogin') === 0)
 		{
 			return TRUE;
 		}
-		else if ($this->session->userdata('userName') && $this->session->userdata('type'))
+		else if ($this->session->userdata('username'))
 		{
-			if ($this->session->userdata('type') == 'user')
+			$tmpRes = $this->db->query("SELECT * FROM user WHERE username='{$this->session->userdata('username')}';");
+			if ($tmpRes && $tmpRes->num_rows > 0)
 			{
-				$tmpRes = $this->db->query("SELECT * FROM user WHERE userName='{$this->session->userdata('userName')}';");
-				if ($tmpRes && $tmpRes->num_rows > 0)
-				{
-					return TRUE;
-				}
+				return TRUE;
 			}
-			else if ($this->session->userdata('type') == 'uploader')
+			else
 			{
-				$tmpRes = $this->db->query("SELECT * FROM uploader WHERE userName='{$this->session->userdata('userName')}';");
-				if ($tmpRes && $tmpRes->num_rows > 0)
-				{
-					return TRUE;
-				}
-			}
-			else if ($this->session->userdata('type') == 'admin')
-			{
-				$tmpRes = $this->db->query("SELECT * FROM admin WHERE userName='{$this->session->userdata('userName')}';");
-				if ($tmpRes && $tmpRes->num_rows > 0)
-				{
-					return TRUE;
-				}
+				return FALSE;
 			}
 		}
-		return FALSE;
+		else
+		{
+			return FALSE;
+		}
 	}
 
 }

@@ -126,7 +126,10 @@ class firstPage extends CW_Controller
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
 		$crud->required_fields('name');
-		$crud->display_as('name', '名称');
+		$crud->required_fields('equipmentSn');
+		$crud->display_as('name', '名称')->display_as('equipmentSn', '设备序列号');
+		$crud->unset_add();
+		$crud->unset_delete();
 		$output = $crud->render();
 		foreach ($output as $key=>$value)
 		{
