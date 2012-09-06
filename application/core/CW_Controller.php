@@ -47,7 +47,7 @@ class CW_Controller extends CI_Controller
 		else if ($this->session->userdata('username'))
 		{
 			$tmpRes = $this->db->query("SELECT * FROM user WHERE username='{$this->session->userdata('username')}';");
-			if ($tmpRes && $tmpRes->num_rows > 0)
+			if ($tmpRes && $tmpRes->num_rows() > 0)
 			{
 				return TRUE;
 			}

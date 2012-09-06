@@ -68,7 +68,7 @@
 	</form>
 </div>
 <div id="imgDiv" class="prepend-1 span-31 last">
-	<img class="testImg" src="" />
+	<img class="testImg" src="#" />
 </div>
 <div class="prepend-1 span-63 last">
 	测试数据查询

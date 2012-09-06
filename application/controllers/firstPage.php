@@ -24,7 +24,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function productType()
+	public function producttype()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -40,7 +40,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function skillLevel()
+	public function skilllevel()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -91,7 +91,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function testItem()
+	public function testitem()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -106,7 +106,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function testRight()
+	public function testright()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -121,7 +121,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function testStation()
+	public function teststation()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -139,7 +139,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function productTestInfo()
+	public function producttestinfo()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -157,7 +157,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function productTypeTestCase()
+	public function producttypetestcase()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -174,7 +174,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function testItemMarkValue()
+	public function testitemmarkvalue()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
@@ -190,7 +190,7 @@ class firstPage extends CW_Controller
 		$this->smarty->display('firstPage.tpl');
 	}
 
-	public function testItemResult()
+	public function testitemresult()
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
