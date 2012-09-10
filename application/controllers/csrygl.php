@@ -77,7 +77,7 @@ class Csrygl extends CI_Controller
 		foreach ($tmpArray as $item)
 		{
 			$jsonData['data'][] = array(
-				(int)$item['testDate'],
+				(float)$item['testDate'],
 				(int)$item['maxT'],
 				(int)$item['minT'],
 				(int)$item['maxT'],
@@ -99,8 +99,8 @@ class Csrygl extends CI_Controller
 		foreach ($tmpArray as $item)
 		{
 			$jsonData['data'][] = array(
-				(int)$item['testDate'],
-				(int)$item['num']
+				(float)$item['testDate'],
+				(float)$item['num']
 			);
 		}
 		echo json_encode($jsonData);
