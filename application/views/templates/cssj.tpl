@@ -17,6 +17,7 @@
 		$(".detail").click(function(e)
 		{
 			e.preventDefault();
+			$('#imgDiv').html('');
 			var tmpStr = $(this).attr('href');
 			var tmpIndex = tmpStr.substring((tmpStr.lastIndexOf('/') + 1));
 			$("#testItemDiv").load("{site_url('cssj/getTestItemResult')}" + "/" + tmpIndex, function(responseText, textStatus, XMLHttpRequest)
@@ -68,7 +69,6 @@
 	</form>
 </div>
 <div id="imgDiv" class="prepend-1 span-31 last">
-	<img class="testImg" src="#" />
 </div>
 <div class="prepend-1 span-63 last">
 	测试数据查询

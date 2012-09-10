@@ -172,13 +172,8 @@ class Login extends CW_Controller
 		$this->load->helper('xml');
 		$dom = xml_dom();
 		//检查用户名密码
-		$tmpRes = $this->db->query('SELECT a.id testerId, a.name testerName, a.employeeId, b.id testRightId, b.name testRightName FROM tester a JOIN testRight b ON a.testRight = b.id WHERE a.employeeId = ? AND password = ?', array(
-			$username,
-			$password
-		));
-		if ($tmpRes->num_rows() > 0)
+		if ($tmpArray = $this->_checkTestUser($username, $password))
 		{
-			$tmpArray = $tmpRes->first_row('array');
 			//取得测试员姓名,员工号,权限
 			$username = xml_add_child($dom, 'username');
 			xml_add_child($username, 'result', 'true');
@@ -246,6 +241,327 @@ class Login extends CW_Controller
 			xml_add_child($username, 'result', 'false');
 		}
 		xml_print($dom);
+	}
+
+	private function _checkTestUser($username, $password)
+	{
+		//检查用户名密码
+		$tmpRes = $this->db->query('SELECT a.id testerId, a.name testerName, a.employeeId, b.id testRightId, b.name testRightName FROM tester a JOIN testRight b ON a.testRight = b.id WHERE a.employeeId = ? AND password = ?', array(
+			$username,
+			$password
+		));
+		if ($tmpRes->num_rows() > 0)
+		{
+			return $tmpRes->first_row('array');
+		}
+		else
+		{
+			return FALSE;
+		}
+	}
+
+	public function uploadFile($username = null, $password = null)
+	{
+		if (PHP_OS == 'WINNT')
+		{
+			$uploadRoot = "D:\\wwwroot\\xiong\\assets\\uploadedSource";
+			$slash = "\\";
+		}
+		else if (PHP_OS == 'Darwin')
+		{
+			$uploadRoot = "/Library/WebServer/Documents/aptana/xiong/assets/uploadedSource";
+			$slash = "/";
+		}
+		else
+		{
+			$this->_returnUploadFailed("错误的服务器操作系统");
+			return;
+		}
+		if ($this->_checkTestUser($username, $password) === FALSE)
+		{
+			$this->_returnUploadFailed("错误的用户名密码");
+			return;
+		}
+		else
+		{
+			//保存上传文件
+			$file_temp = $_FILES['file']['tmp_name'];
+			date_default_timezone_set('Asia/Shanghai');
+			$dateStamp = date("Y_m_d");
+			$dateStampFolder = $uploadRoot.$slash.$dateStamp;
+			if (file_exists($dateStampFolder) && is_dir($dateStampFolder))
+			{
+				//do nothing
+			}
+			else
+			{
+				echo $dateStampFolder;
+				if (mkdir($dateStampFolder))
+				{
+				}
+				else
+				{
+					$this->_returnUploadFailed("日期目录创建失败");
+					return;
+				}
+			}
+			$file_name = $dateStamp.$slash.$_FILES['file']['name'];
+			//complete upload
+			$filestatus = move_uploaded_file($file_temp, $uploadRoot.$slash.$file_name);
+			if (!$filestatus)
+			{
+				$this->_returnUploadFailed("文件:".$_FILES['file']['name']."上传失败");
+				return;
+			}
+			//解压缩文件
+			if (PHP_OS == 'WINNT')
+			{
+			}
+			else if (PHP_OS == 'Darwin')
+			{
+				$zip = new ZipArchive;
+				if ($zip->open($uploadRoot.$slash.$file_name) === TRUE)
+				{
+					$zip->extractTo($uploadRoot.$slash.$dateStamp.$slash);
+					$zip->close();
+					//关闭处理的zip文件
+				}
+				else
+				{
+					$this->_returnUploadFailed("文件:".$_FILES['file']['name']."打开失败");
+					return;
+				}
+			}
+			//解析文件并插入数据库
+			$this->db->trans_start();
+			//解析General.csv
+			if ($handle = fopen($uploadRoot.$slash.$dateStamp.$slash.substr($_FILES['file']['name'], 0, -4).$slash.'General.csv', "r"))
+			{
+				$i = 0;
+				while (($buffer = fgets($handle)) !== false)
+				{
+					$i = $i + 1;
+					if ($i == 1)
+					{
+						$tmpArray = explode(",", $buffer);
+						continue;
+					}
+					$tmpArray = explode(",", $buffer);
+					//取得测试时间
+					$testTime = $tmpArray[0];
+					//取得测试站号
+					$tmpRes = $this->db->query("SELECT id FROM testStation WHERE name = ?", array($tmpArray[1]));
+					if ($tmpRes->num_rows() == 0)
+					{
+						$this->db->trans_rollback();
+						$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中General.csv中(".$buffer.")对应测试站点没有找到");
+						return;
+					}
+					else
+					{
+						$testStation = $tmpRes->first_row()->id;
+					}
+					//取得设备序列号
+					$equipmentSn = $tmpArray[2];
+					//取得测试者id
+					$tmpRes = $this->db->query("SELECT id FROM tester WHERE employeeId = ?", array($tmpArray[3]));
+					if ($tmpRes->num_rows() == 0)
+					{
+						$this->db->trans_rollback();
+						$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中General.csv中(".$buffer.")对应测试者没有找到");
+						return;
+					}
+					else
+					{
+						$tester = $tmpRes->first_row()->id;
+					}
+					//取得产品类型
+					$tmpRes = $this->db->query("SELECT id FROM producttype WHERE name = ?", array($tmpArray[4]));
+					if ($tmpRes->num_rows() == 0)
+					{
+						$this->db->trans_rollback();
+						$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中General.csv中(".$buffer.")对应产品类型没有找到");
+						return;
+					}
+					else
+					{
+						$productType = $tmpRes->first_row()->id;
+					}
+					//取得产品SN
+					$sn = $tmpArray[5];
+					//处理测试结果
+					if ($tmpArray[6] == 'PASS')
+					{
+						$testResult = 1;
+					}
+					else
+					{
+						$testResult = 0;
+					}
+					//处理客户化数据
+					$cus1 = $tmpArray[7];
+					$cus2 = $tmpArray[8];
+					$cus3 = $tmpArray[9];
+					$cus4 = $tmpArray[10];
+					$cus5 = $tmpArray[11];
+					//插入producttestinfo
+					$tmpSql = "INSERT INTO `producttestinfo`(`sn`, `equipmentSn`, `testTime`, `testStation`, `tester`, `productType`, `result`, `column1`, `column2`, `column3`, `column4`, `column5`, `column6`, `column7`, `column8`, `column9`, `column10`) ";
+					$tmpSql .= "VALUES ('$sn','$equipmentSn','$testTime'+ INTERVAL 0 SECOND,$testStation,$tester,$productType,$testResult,'$cus1','$cus2','$cus3','$cus4','$cus5',null,null,null,null,null)";
+					$tmpRes = $this->db->query($tmpSql);
+					if ($tmpRes === TRUE)
+					{
+						//取得producttestinfo id
+						$productTestInfo = $this->db->insert_id();
+						//取得测试项名称
+						$testItemList = $this->_getDirFiles($uploadRoot.$slash.$dateStamp.$slash.substr($_FILES['file']['name'], 0, -4).$slash, 'csv', 'General.csv');
+						foreach ($testItemList as $testItemItem)
+						{
+							//插入testitemresult
+							//转换csv文件名
+							if (PHP_OS == 'WINNT')
+							{
+								$fileName = $testItemItem;
+							}
+							else if (PHP_OS == 'Darwin')
+							{
+								$fileName = urldecode($testItemItem);
+							}
+							//取得测试项目名称
+							$tmpArray = preg_split("[-|\.]", $fileName);
+							$testItemName = $tmpArray[0];
+							//取得测试项目id
+							$tmpRes = $this->db->query("SELECT id FROM testitem WHERE name = ?", array(iconv('GB2312', 'UTF-8', $testItemName)));
+							if ($tmpRes->num_rows() > 0)
+							{
+								$testItem = $tmpRes->first_row()->id;
+							}
+							else
+							{
+								$this->db->trans_rollback();
+								$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中没有找到对应测试项目名称:".iconv('GB2312', 'UTF-8', $testItemName));
+								return;
+							}
+							$testResult = $tmpArray[1] == 'PASS' ? 1 : 0;
+							//取得图片文件名称
+							$imgFile = substr($testItemItem, 0, -9)."-img.png";
+							$testItemImg = $dateStamp.$slash.substr($_FILES['file']['name'], 0, -4).$slash.$imgFile;
+							//插入testitemresult
+							$tmpRes = $this->db->query("INSERT INTO `testitemresult`(`productTestInfo`, `testItem`, `testResult`, `img`) VALUES ($productTestInfo, $testItem, $testResult, '$testItemImg')");
+							if ($tmpRes === TRUE)
+							{
+								//取得testitemresult id
+								$testItemResult = $this->db->insert_id();
+								//处理testItem文件
+								if ($handle2 = fopen($uploadRoot.$slash.$dateStamp.$slash.substr($_FILES['file']['name'], 0, -4).$slash.$testItemItem, "r"))
+								{
+									$i2 = 0;
+									while (($buffer2 = fgets($handle2)) !== false)
+									{
+										$i2 = $i2 + 1;
+										if ($i2 == 1)
+										{
+											$tmpArray2 = explode(",", $buffer2);
+											continue;
+										}
+										$tmpArray2 = explode(",", $buffer2);
+										//取得testResult
+										$singleTestResult = $tmpArray2[0];
+										//取得fmark
+										$singleTextFmark = $tmpArray2[1];
+										//取得tmark
+										$singleTextTmark = isset($tmpArray2[3]) ? $tmpArray2[3] : null;
+										$tmpRes = $this->db->query("INSERT INTO `testitemmarkvalue`(`testItemResult`, `value`, `markF`, `markT`) VALUES (?, ?, ?, ?)", array(
+											$testItemResult,
+											$singleTestResult,
+											$singleTextFmark,
+											$singleTextTmark
+										));
+										if ($tmpRes === TRUE)
+										{
+											//do nothing
+										}
+										else
+										{
+											$this->db->trans_rollback();
+											$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中".iconv('GB2312', 'UTF-8', $testItemName).":$buffer2 插入失败");
+											return;
+										}
+									}
+									fclose($handle2);
+								}
+								else
+								{
+									$this->_returnUploadFailed("文件:$fileName 打开失败");
+									return;
+								}
+							}
+							else
+							{
+								$this->db->trans_rollback();
+								$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中$testItemItem 插入testitemresult失败");
+								return;
+							}
+						}
+					}
+					else
+					{
+						$this->db->trans_rollback();
+						$this->_returnUploadFailed("文件:".$_FILES['file']['name']."中General.csv中(".$buffer.")插入producttestinfo失败");
+						return;
+					}
+				}
+				fclose($handle);
+			}
+			else
+			{
+				$this->_returnUploadFailed("文件:General.csv 打开失败");
+				return;
+			}
+		}
+		$this->_returnUploadOk();
+		return;
+	}
+
+	private function _returnUploadOK()
+	{
+		$this->db->trans_commit();
+		$this->load->helper('xml');
+		$dom = xml_dom();
+		xml_add_child($dom, 'result', 'true');
+		xml_add_child($dom, 'info');
+		xml_print($dom);
+	}
+
+	private function _returnUploadFailed($err)
+	{
+		$this->load->helper('xml');
+		$dom = xml_dom();
+		xml_add_child($dom, 'result', 'false');
+		xml_add_child($dom, 'info', $err);
+		xml_print($dom);
+	}
+
+	private function _getDirFiles($dir, $extension, $except)
+	{
+		if ($handle = opendir($dir))
+		{
+			$files = array();
+			/* Because the return type could be false or other equivalent type(like 0),
+			 this is the correct way to loop over the directory. */
+			while (false !== ($file = readdir($handle)))
+			{
+				if (($file != 'General.csv') && substr($file, strrpos($file, '.') + 1) == $extension)
+				{
+					$files[] = $file;
+				}
+			}
+			closedir($handle);
+			return $files;
+		}
+		else
+		{
+			return FALSE;
+		}
 	}
 
 }
