@@ -14,7 +14,7 @@
 | path to your installation.
 |
 */
-$config['base_url']	= 'http://webxiong/xiong/';
+$config['base_url']	= 'http://localx/aptana/xiong/';
 
 /*
 |--------------------------------------------------------------------------
