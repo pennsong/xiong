@@ -316,6 +316,7 @@ class Login extends CW_Controller
 			//解压缩文件
 			if (PHP_OS == 'WINNT')
 			{
+				exec('C:\Progra~1\7-Zip\7z.exe x '.$uploadRoot.$slash.$file_name.' -o'.$uploadRoot.$slash.$dateStamp.' -y', $info);
 			}
 			else if (PHP_OS == 'Darwin')
 			{
@@ -443,10 +444,17 @@ class Login extends CW_Controller
 							}
 							$testResult = $tmpArray[1] == 'PASS' ? 1 : 0;
 							//取得图片文件名称
-							$imgFile = substr($testItemItem, 0, -9)."-img.png";
+							if (PHP_OS == 'WINNT')
+							{
+								$imgFile = iconv('GB2312', 'UTF-8', substr($testItemItem, 0, -9)."-img.png");
+							}
+							else if (PHP_OS == 'Darwin')
+								$imgFile = substr($testItemItem, 0, -9)."-img.png";
+							{
+							}
 							$testItemImg = $dateStamp.$slash.substr($_FILES['file']['name'], 0, -4).$slash.$imgFile;
 							//插入testitemresult
-							$tmpRes = $this->db->query("INSERT INTO `testitemresult`(`productTestInfo`, `testItem`, `testResult`, `img`) VALUES ($productTestInfo, $testItem, $testResult, '$testItemImg')");
+							$tmpRes = $this->db->query("INSERT INTO `testitemresult`(`productTestInfo`, `testItem`, `testResult`, `img`) VALUES ($productTestInfo, $testItem, $testResult, ?)", array($testItemImg));
 							if ($tmpRes === TRUE)
 							{
 								//取得testitemresult id
@@ -527,8 +535,9 @@ class Login extends CW_Controller
 		$this->db->trans_commit();
 		$this->load->helper('xml');
 		$dom = xml_dom();
-		xml_add_child($dom, 'result', 'true');
-		xml_add_child($dom, 'info');
+		$uploadResult = xml_add_child($dom, 'uploadResult');
+		xml_add_child($uploadResult, 'result', 'true');
+		xml_add_child($uploadResult, 'info', 'success');
 		xml_print($dom);
 	}
 
@@ -536,8 +545,9 @@ class Login extends CW_Controller
 	{
 		$this->load->helper('xml');
 		$dom = xml_dom();
-		xml_add_child($dom, 'result', 'false');
-		xml_add_child($dom, 'info', $err);
+		$uploadResult = xml_add_child($dom, 'uploadResult');
+		xml_add_child($uploadResult, 'result', 'false');
+		xml_add_child($uploadResult, 'info', $err);
 		xml_print($dom);
 	}
 
