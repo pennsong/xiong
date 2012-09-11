@@ -115,7 +115,7 @@
 			{$productTest['employeeId']}
 		</div>
 		<div class="span-4">
-			{$productTest['productType']}
+			{$productTest['productTypeName']}
 		</div>
 		<div class="span-4">
 			{$productTest['sn']}

@@ -295,7 +295,6 @@ class Login extends CW_Controller
 			}
 			else
 			{
-				echo $dateStampFolder;
 				if (mkdir($dateStampFolder))
 				{
 				}

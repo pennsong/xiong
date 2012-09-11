@@ -104,7 +104,7 @@ class Cssj extends CW_Controller
 		$this->load->library('pagination');
 		$config['base_url'] = site_url('cssj/index/');
 		$config['uri_segment'] = 3;
-		//取得符合条件人才信息条数
+		//取得符合条件信息条数
 		$tmpRes = $this->db->query("SELECT COUNT(*) num FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
 		$config['total_rows'] = $tmpRes->first_row()->num;
 		$config['per_page'] = '10';
