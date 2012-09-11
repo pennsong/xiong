@@ -170,7 +170,8 @@ class Login extends CW_Controller
 	public function clientLogin($username = null, $password = null, $equipmentSn = null)
 	{
 		$this->load->helper('xml');
-		$dom = xml_dom();
+		$root = xml_dom();
+		$dom = xml_add_child($root, 'info');
 		//检查用户名密码
 		if ($tmpArray = $this->_checkTestUser($username, $password))
 		{
@@ -240,7 +241,7 @@ class Login extends CW_Controller
 			$username = xml_add_child($dom, 'username');
 			xml_add_child($username, 'result', 'false');
 		}
-		xml_print($dom);
+		xml_print($root);
 	}
 
 	private function _checkTestUser($username, $password)
