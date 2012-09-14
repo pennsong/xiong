@@ -161,8 +161,8 @@ class firstPage extends CW_Controller
 	{
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
-		$crud->required_fields('productType', 'testItem', 'stateFile');
-		$crud->display_as('productType', '产品类型')->display_as('testItem', '测试项')->display_as('stateFile', '状态文件');
+		$crud->required_fields('productType', 'testItem', 'stateFile', 'portNum');
+		$crud->display_as('productType', '产品类型')->display_as('testItem', '测试项')->display_as('stateFile', '状态文件')->display_as('portNum', '端口数');
 		$crud->set_relation('productType', 'productType', 'name');
 		$crud->set_relation('testItem', 'testItem', 'name');
 		$output = $crud->render();

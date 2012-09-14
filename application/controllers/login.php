@@ -210,7 +210,7 @@ class Login extends CW_Controller
 					xml_add_child($productType, 'id', $productTypeItem['id']);
 					xml_add_child($productType, 'name', $productTypeItem['name']);
 					//取得产品测试案例内容
-					$tmpRes = $this->db->query('SELECT a.testItem, b.name testItemName, a.stateFile FROM productTypeTestCase a JOIN testItem b ON a.testItem = b.id WHERE a.productType = ? ORDER BY a.testItem', array($productTypeItem['id']));
+					$tmpRes = $this->db->query('SELECT a.testItem, b.name testItemName, a.stateFile, a.portNum FROM productTypeTestCase a JOIN testItem b ON a.testItem = b.id WHERE a.productType = ? ORDER BY a.testItem', array($productTypeItem['id']));
 					if ($tmpRes->num_rows() > 0)
 					{
 						$tmpTestItemArray = $tmpRes->result_array();
@@ -221,6 +221,7 @@ class Login extends CW_Controller
 							xml_add_child($testItem, 'id', $testItemItem['testItem']);
 							xml_add_child($testItem, 'name', $testItemItem['testItemName']);
 							xml_add_child($testItem, 'state_file', $testItemItem['stateFile']);
+							xml_add_child($testItem, 'port_num', $testItemItem['portNum']);
 						}
 					}
 					else
