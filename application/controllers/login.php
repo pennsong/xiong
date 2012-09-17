@@ -474,16 +474,19 @@ class Login extends CW_Controller
 										}
 										$tmpArray2 = explode(",", $buffer2);
 										//取得testResult
-										$singleTestResult = $tmpArray2[0];
-										//取得fmark
-										$singleTextFmark = $tmpArray2[1];
-										//取得tmark
-										$singleTextTmark = isset($tmpArray2[3]) ? $tmpArray2[3] : null;
-										$tmpRes = $this->db->query("INSERT INTO `testitemmarkvalue`(`testItemResult`, `value`, `markF`, `markT`) VALUES (?, ?, ?, ?)", array(
+										$singleTestResult = $tmpArray2[1];
+										//取得mark
+										$singleTextMark = $tmpArray2[0];
+										//取得channel
+										$singleTextChannel = $tmpArray2[2];
+										//取得trace
+										$singleTextTrace = $tmpArray2[3];
+										$tmpRes = $this->db->query("INSERT INTO `testitemmarkvalue`(`testItemResult`, `value`, `mark`, `channel`, `trace`) VALUES (?, ?, ?, ?, ?)", array(
 											$testItemResult,
 											$singleTestResult,
-											$singleTextFmark,
-											$singleTextTmark
+											$singleTextMark,
+											$singleTextChannel,
+											$singleTextTrace
 										));
 										if ($tmpRes === TRUE)
 										{

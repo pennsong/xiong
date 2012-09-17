@@ -15,7 +15,7 @@
 	</div>
 	{foreach $item['testItemMarkValueArray'] as $mark}
 	<div class="prepend-1 span-30 last">
-		({$mark['value']}|{$mark['markF']}|{$mark['markT']})
+		({$mark['value']}|{$mark['mark']}|{$mark['channel']}|{$mark['trace']})
 	</div>
 	{/foreach}
 </div>
