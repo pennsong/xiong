@@ -1,6 +1,6 @@
 /*user interface defined by system specification*/
 body.cldn {
-	background-color: rgb(238, 236, 225);
+	background-color: #FFFFFF;
 	color: rgb(102, 102, 102);
 	font-family: Verdana, Arial, Helvetica;
 	font-size: 13px;
@@ -210,7 +210,8 @@ a.normal:hover {
 	color: green;
 }
 img.logo {
-	height: 15px;
+	width: 80px;
+	height: 30px;
 }
 
 div.pageTop {

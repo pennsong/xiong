@@ -53,9 +53,9 @@ class Cssj extends CW_Controller
 		$sqlSn = "";
 		if ($timeFrom != null)
 		{
-			if ($this->_checkTime($timeFrom." 00:00:00"))
+			if ($this->_checkTime($timeFrom.":00"))
 			{
-				$sqlTimeFrom = " AND testTime >= '$timeFrom"." "."'";
+				$sqlTimeFrom = " AND testTime >= '$timeFrom".":00"."'";
 			}
 			else
 			{
@@ -64,9 +64,9 @@ class Cssj extends CW_Controller
 		}
 		if ($timeTo != null)
 		{
-			if ($this->_checkTime($timeTo." 23:59:59"))
+			if ($this->_checkTime($timeTo.":59"))
 			{
-				$sqlTimeTo = " AND testTime <= '$timeTo"." "."23:59:59'";
+				$sqlTimeTo = " AND testTime <= '$timeTo".":59'";
 			}
 			else
 			{
@@ -86,19 +86,19 @@ class Cssj extends CW_Controller
 		}
 		if ($testStationName != null)
 		{
-			$sqlTestStationName = " AND b.name = '$testStationName'";
+			$sqlTestStationName = " AND b.name like '%$testStationName%'";
 		}
 		if ($productTypeName != null)
 		{
-			$sqlProductTypeName = " AND d.name = '$productTypeName'";
+			$sqlProductTypeName = " AND d.name like '%$productTypeName%'";
 		}
 		if ($employeeId != null)
 		{
-			$sqlEmployeeId = " AND employeeId = '$employeeId'";
+			$sqlEmployeeId = " AND employeeId like '%$employeeId%'";
 		}
 		if ($sn != null)
 		{
-			$sqlSn = " AND sn = '$sn'";
+			$sqlSn = " AND sn like '%$sn%'";
 		}
 		//处理分页
 		$this->load->library('pagination');

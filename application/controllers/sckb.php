@@ -13,7 +13,7 @@ class Sckb extends CW_Controller
 	{
 		//取得测试站点
 		$tmpRes = $this->db->query("SELECT * FROM testStation ORDER BY name");
-		$testStationList = array(''=>'请选择');
+		$testStationList = array(''=>'所有');
 		if ($tmpRes->num_rows() > 0)
 		{
 			foreach ($tmpRes->result() as $row)

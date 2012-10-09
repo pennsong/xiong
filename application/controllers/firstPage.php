@@ -29,14 +29,14 @@ class firstPage extends CW_Controller
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
 		$crud->required_fields('name', 'img');
-		$crud->display_as('name', '名称')->display_as('img', '图纸链接');
+		$crud->display_as('name', '名称')->display_as('img', '工艺文档');
 		$crud->set_field_upload('img', 'assets/uploads/files');
 		$output = $crud->render();
 		foreach ($output as $key=>$value)
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '产品类型');
+		$this->smarty->assign('title', '产品管理');
 		$this->smarty->display('firstPage.tpl');
 	}
 
@@ -51,7 +51,7 @@ class firstPage extends CW_Controller
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '测试技能水平');
+		$this->smarty->assign('title', '技能水平');
 		$this->smarty->display('firstPage.tpl');
 	}
 
@@ -66,7 +66,7 @@ class firstPage extends CW_Controller
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '组');
+		$this->smarty->assign('title', '用户组');
 		$this->smarty->display('firstPage.tpl');
 	}
 
@@ -86,7 +86,7 @@ class firstPage extends CW_Controller
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '测试人员');
+		$this->smarty->assign('title', '测试员');
 		$this->smarty->assign('diagram', TRUE);
 		$this->smarty->display('firstPage.tpl');
 	}
@@ -102,7 +102,7 @@ class firstPage extends CW_Controller
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '测试项目');
+		$this->smarty->assign('title', '测试项');
 		$this->smarty->display('firstPage.tpl');
 	}
 
@@ -117,7 +117,7 @@ class firstPage extends CW_Controller
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '测试权限');
+		$this->smarty->assign('title', '测试员权限');
 		$this->smarty->display('firstPage.tpl');
 	}
 
@@ -170,7 +170,7 @@ class firstPage extends CW_Controller
 		{
 			$this->smarty->assign($key, $value);
 		}
-		$this->smarty->assign('title', '产品测试案例');
+		$this->smarty->assign('title', '产品测试方案');
 		$this->smarty->display('firstPage.tpl');
 	}
 
@@ -220,6 +220,23 @@ class firstPage extends CW_Controller
 			$this->smarty->assign($key, $value);
 		}
 		$this->smarty->assign('title', '系统用户');
+		$this->smarty->display('firstPage.tpl');
+	}
+
+	public function firstpagenotice()
+	{
+		$crud = new grocery_CRUD();
+		$crud->set_theme('datatables');
+		$crud->required_fields('content');
+		$crud->display_as('content', '通知内容');
+		$crud->unset_add();
+		$crud->unset_delete();
+		$output = $crud->render();
+		foreach ($output as $key=>$value)
+		{
+			$this->smarty->assign($key, $value);
+		}
+		$this->smarty->assign('title', '首页通知');
 		$this->smarty->display('firstPage.tpl');
 	}
 

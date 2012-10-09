@@ -36,34 +36,34 @@
 		<div class="span-5">
 			时间:
 		</div>
-		<input type="text" name="timeFrom" />
+		<input type="text" name="timeFrom" value="{$smarty.post.timeFrom|default:''}"/>
 		至
-		<input type="text" name="timeTo" />
+		<input type="text" name="timeTo" value="{$smarty.post.timeTo|default:''}"/>
 		<br>
 		<div class="span-5">
 			测试结果:
 		</div>
-		<input type="text" name="testResult" />
+		<input type="text" name="testResult" value="{$smarty.post.testResult|default:''}"/>
 		<br>
 		<div class="span-5">
 			测试站:
 		</div>
-		<input type="text" name="testStationName" />
+		<input type="text" name="testStationName" value="{$smarty.post.testStationName|default:''}"/>
 		<br>
 		<div class="span-5">
 			型号:
 		</div>
-		<input type="text" name="productTypeName" />
+		<input type="text" name="productTypeName" value="{$smarty.post.productTypeName|default:''}"/>
 		<br>
 		<div class="span-5">
 			工号:
 		</div>
-		<input type="text" name="employeeId" />
+		<input type="text" name="employeeId" value="{$smarty.post.employeeId|default:''}"/>
 		<br>
 		<div class="span-5">
 			序列号:
 		</div>
-		<input type="text" name="sn" />
+		<input type="text" name="sn" value="{$smarty.post.sn|default:''}"/>
 		<br>
 		<input type="submit" value="查找">
 	</form>
@@ -73,24 +73,24 @@
 <div class="prepend-1 span-63 last">
 	测试数据查询
 </div>
-<div class="prepend-1 span-31">
-	<div class="span-31">
+<div class="prepend-1 span-46">
+	<div class="span-46">
 		<div class="span-2">
 			序号
 		</div>
-		<div class="span-6">
+		<div class="span-10">
 			时间
 		</div>
 		<div class="span-5">
 			测试站
 		</div>
-		<div class="span-4">
+		<div class="span-2">
 			工号
 		</div>
-		<div class="span-4">
+		<div class="span-10">
 			型号
 		</div>
-		<div class="span-4">
+		<div class="span-8">
 			序列号
 		</div>
 		<div class="span-4">
@@ -101,23 +101,23 @@
 		</div>
 	</div>
 	{foreach $productTestList as $productTest}
-	<div class="span-31">
+	<div class="span-46">
 		<div class="span-2">
 			{$productTest['id']}
 		</div>
-		<div class="span-6">
+		<div class="span-10">
 			{$productTest['testTime']}
 		</div>
 		<div class="span-5">
 			{$productTest['testStationName']}
 		</div>
-		<div class="span-4">
+		<div class="span-2">
 			{$productTest['employeeId']}
 		</div>
-		<div class="span-4">
+		<div class="span-10">
 			{$productTest['productTypeName']}
 		</div>
-		<div class="span-4">
+		<div class="span-8">
 			{$productTest['sn']}
 		</div>
 		<div class="span-4">
@@ -130,6 +130,6 @@
 	{/foreach}
 	{$CI->pagination->create_links()}
 </div>
-<div id="testItemDiv" class="prepend-1 span-31 last">
+<div id="testItemDiv" class="prepend-1 span-16 last">
 </div>
 <!--{/block}-->

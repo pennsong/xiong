@@ -21,7 +21,7 @@
 <script src="{base_url()}resource/js/highCharts/modules/exporting.js"></script>
 {/if}
 <script>
-	/*{if $title == '测试人员'}*/
+	/*{if $title == '测试员'}*/
 	$(document).ready(function()
 	{
 		$(".performance").parent().click(function(e)

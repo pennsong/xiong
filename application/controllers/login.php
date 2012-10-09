@@ -13,6 +13,12 @@ class Login extends CW_Controller
 	public function index()
 	{
 		$this->session->sess_destroy();
+		//取得首页通知内容
+		$tmpRes = $this->db->query('SELECT content FROM firstpagenotice');
+		if ($tmpRes)
+		{
+			$this->smarty->assign('noticeBody', $tmpRes->first_row()->content);
+		}
 		$this->smarty->display('login.tpl');
 	}
 
@@ -37,7 +43,7 @@ class Login extends CW_Controller
 		{
 			//登录成功
 			$this->input->set_cookie('type', $this->input->post('type'), 3600 * 24 * 30);
-			redirect(base_url().'index.php/firstPage');
+			redirect(base_url().'index.php/sckb');
 		}
 		else
 		{
