@@ -272,7 +272,7 @@ class Login extends CW_Controller
 	{
 		if (PHP_OS == 'WINNT')
 		{
-			$uploadRoot = "D:\\wwwroot\\xiong\\assets\\uploadedSource";
+			$uploadRoot = "D:\\project\\xiong\\assets\\uploadedSource";
 			$slash = "\\";
 		}
 		else if (PHP_OS == 'Darwin')
