@@ -4,7 +4,7 @@
 <!--{/block}-->
 <!--{block name=style}-->
 <style type="text/css" media="screen">
-	div.diagram1 {
+	#diagram1 {
 		height: 400px;
 	}
 </style>
@@ -31,7 +31,7 @@
 			var tmpIndex = tmpStr.substring((tmpStr.lastIndexOf('/') + 1));
 			$.getJSON("{site_url('csrygl/testerPerformance')}" + "/" + tmpIndex, function(jsonData)
 			{
-				if (jsonData['data'].length == 0)
+				if (jsonData['length'] == 0)
 				{
 					return;
 				}
@@ -66,7 +66,7 @@
 			$.getJSON("{site_url('csrygl/testerWorkLoad')}" + "/" + tmpIndex, function(data)
 			{
 				// split the data set into ohlc and volume
-				var ohlc = [], volume = [], dataLength = data['data'].length;
+				var ohlc = [], volume = [], dataLength = data['length'];
 				for ( i = 0; i < dataLength; i++)
 				{
 					ohlc.push([data['data'][i][0], // the date

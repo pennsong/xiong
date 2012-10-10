@@ -74,6 +74,7 @@ class Csrygl extends CI_Controller
 		$jsonData['testerName'] = $testerName;
 		$tmpRes = $this->db->query("SELECT CONCAT(LPAD(HOUR(MAX(testTime)), 2, '0'),':',LPAD(MINUTE(MAX(testTime)), 2, '0')) maxT, CONCAT(LPAD(HOUR(MIN(testTime)), 2, '0'),':',LPAD(MINUTE(MIN(testTime)), 2, '0')) minT, CONCAT(UNIX_TIMESTAMP(CONCAT(DATE(testTime), ' 00:00:00')) + 28800, '000') testDate FROM productTestInfo WHERE tester = ? GROUP BY testDate ORDER BY testDate", array($tester));
 		$tmpArray = $tmpRes->result_array();
+		$jasonData['length'] = count($tmpArray);
 		foreach ($tmpArray as $item)
 		{
 			$jsonData['data'][] = array(
@@ -96,6 +97,7 @@ class Csrygl extends CI_Controller
 		$jsonData['testerName'] = $testerName;
 		$tmpRes = $this->db->query("SELECT CONCAT(UNIX_TIMESTAMP(CONCAT(DATE(testTime), ' 00:00:00')) + 28800, '000') testDate, count(*) num FROM `productTestInfo` WHERE tester = ? AND result = 1 GROUP BY testDate", array($tester));
 		$tmpArray = $tmpRes->result_array();
+		$jasonData['length'] = count($tmpArray);
 		foreach ($tmpArray as $item)
 		{
 			$jsonData['data'][] = array(
