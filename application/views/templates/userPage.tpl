@@ -74,7 +74,7 @@
 		<div class="prepend-1 span-6">
 			<span><a style="line-height: 39px" class="{if $title=='生产看板'} currentMenu {else} normal {/if}" href="{site_url('sckb')}">生产看板</a></span>
 		</div>
-		<div class="prepend-1 span-6">
+		<div class="prepend-1 span-9">
 			<span><a style="line-height: 39px" class="{if $title=='测试数据查询'} currentMenu {else} normal {/if}" href="{site_url('cssj')}">测试数据查询</a></span>
 		</div>
 		<div class="prepend-1 span-9">
