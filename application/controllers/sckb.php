@@ -74,7 +74,7 @@ class Sckb extends CW_Controller
 		}
 		foreach ($okNumArray as $item)
 		{
-			$passRateList[$item['hour']] = ($item['num'] * 100) / $totalNumList[$item['hour']];
+			$passRateList[$item['hour']] = number_format(($item['num'] * 100) / $totalNumList[$item['hour']], 1, '.', '');;
 		}
 		//计算通过率
 		$this->smarty->assign('totalNumList', $totalNumList);

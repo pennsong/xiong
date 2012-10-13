@@ -8,11 +8,8 @@
 <!--{block name=body}-->
 <div class="span-64 last">
 	<div class="span-64 last">
-		<span class="cldnH1">信息维护</span>
-	</div>
-	<div class="span-64 last">
 		<div class="span-12">
-			<span class="cldnH2">产品</span>
+			<span class="cldnH1">产品</span>
 		</div>
 		<div class="prepend-1 span-6">
 			<span><a style="line-height: 39px" class="{if $title=='产品管理'} currentMenu {else} normal {/if}" href="{site_url('firstPage/producttype')}">产品管理</a></span>
@@ -21,7 +18,7 @@
 	<hr>
 	<div class="span-64 last">
 		<div class="span-12">
-			<span class="cldnH2">测试</span>
+			<span class="cldnH1">测试</span>
 		</div>
 		<div class="prepend-1 span-6">
 			<span><a style="line-height: 39px" class="{if $title=='测试项'} currentMenu {else} normal {/if}" href="{site_url('firstPage/testitem')}">测试项</a></span>
@@ -36,7 +33,7 @@
 	<hr>
 	<div class="span-64 last">
 		<div class="span-12">
-			<span class="cldnH2">组织与人员</span>
+			<span class="cldnH1">组织与人员</span>
 		</div>
 		<div class="prepend-1 span-6">
 			<span><a style="line-height: 39px" class="{if $title=='部门'} currentMenu {else} normal {/if}" href="{site_url('firstPage/department')}">部门管理</a></span>
@@ -54,7 +51,7 @@
 	<hr>
 	<div class="span-64 last">
 		<div class="span-12">
-			<span class="cldnH2">系统用户管理</span>
+			<span class="cldnH1">系统用户管理</span>
 		</div>
 		<div class="prepend-1 span-6">
 			<span><a style="line-height: 39px" class="{if $title=='系统用户'} currentMenu {else} normal {/if}" href="{site_url('firstPage/user')}">系统用户管理</a></span>
@@ -69,7 +66,7 @@
 	<hr>
 	<div class="span-64 last">
 		<div class="span-12">
-			<span class="cldnH2">功能模块</span>
+			<span class="cldnH1">功能模块</span>
 		</div>
 		<div class="prepend-1 span-6">
 			<span><a style="line-height: 39px" class="{if $title=='生产看板'} currentMenu {else} normal {/if}" href="{site_url('sckb')}">生产看板</a></span>

@@ -9,11 +9,11 @@ body.cldn {
 div.rightBorder {
 	border-right: 1px dashed #c0beb5;
 }
-span.cldnH1 {
+span.cldnH2 {
 	font-family: 'times new roman';
 	font-size: 26px;
 }
-span.cldnH2 {
+span.cldnH1 {
 	font-family: 'times new roman';
 	font-size: 20px;
 	color: #948a54;

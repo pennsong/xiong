@@ -41,12 +41,19 @@
 				}
 			});
 		});
+		//处理分页连接点击事件
+		$(".locPage > a").click(function(e) {
+			e.preventDefault();
+			var url = $("#locForm").attr('action') + $(this).attr('href');
+			$("#locForm").attr('action', url);
+			$("#locForm").submit();
+		});
 	}); 
 </script>
 <!--{/block}-->
 <!--{block name=subBody}-->
 <div class="prepend-1 span-31">
-	<form method="post" action="{site_url('cssj')}">
+	<form id="locForm" method="post" action="{site_url('cssj/index')}">
 		<div class="span-5">
 			时间:
 		</div>
@@ -78,7 +85,7 @@
 		<div class="span-5">
 			测试结果:
 		</div>
-		<input type="text" name="testResult" value="{$smarty.post.testResult|default:''}"/>
+		{html_options name=testResult options=$testResultList selected=$smarty.post.testResult|default:''}
 		<br>
 		<div class="span-5">
 			测试站:

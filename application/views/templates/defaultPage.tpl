@@ -21,7 +21,7 @@
 		<div class="container">
 			<div class="span-64 last">
 				<img class="logo span-6" src="{base_url()}resource/img/gc.png"/>
-				<span class="cldnH1 prepend-1 span-41">CAMEL精益生产管理系统-测试管理</span>
+				<span class="cldnH2 prepend-1 span-41">CAMEL精益生产管理系统-测试管理</span>
 				<div class="span-8">
 					欢迎您:{$CI->session->userdata('username')}
 				</div>

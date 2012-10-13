@@ -11,6 +11,12 @@ class Cssj extends CW_Controller
 
 	private function _init()
 	{
+		$testResultList = array(
+			''=>'所有',
+			'0'=>'FAIL',
+			'1'=>'PASS'
+		);
+		$this->smarty->assign('testResultList', $testResultList);
 	}
 
 	private function _checkDateFormat($date)
@@ -37,16 +43,56 @@ class Cssj extends CW_Controller
 	function index($offset = 0, $limit = 30)
 	{
 		$timeFrom1 = emptyToNull($this->input->post('timeFrom1'));
+		if ($timeFrom1 == null)
+		{
+			$timeFrom1 = 1900;
+		}
 		$timeFrom2 = emptyToNull($this->input->post('timeFrom2'));
+		if ($timeFrom2 == null)
+		{
+			$timeFrom2 = 1;
+		}
 		$timeFrom3 = emptyToNull($this->input->post('timeFrom3'));
+		if ($timeFrom3 == null)
+		{
+			$timeFrom3 = 1;
+		}
 		$timeFrom4 = emptyToNull($this->input->post('timeFrom4'));
+		if ($timeFrom4 == null)
+		{
+			$timeFrom4 = 0;
+		}
 		$timeFrom5 = emptyToNull($this->input->post('timeFrom5'));
+		if ($timeFrom5 == null)
+		{
+			$timeFrom5 = 0;
+		}
 		$timeFrom = $timeFrom1."-".$timeFrom2."-".$timeFrom3." ".$timeFrom4.":".$timeFrom5;
 		$timeTo1 = emptyToNull($this->input->post('timeTo1'));
+		if ($timeTo1 == null)
+		{
+			$timeTo1 = 2050;
+		}
 		$timeTo2 = emptyToNull($this->input->post('timeTo2'));
+		if ($timeTo2 == null)
+		{
+			$timeTo2 = 1;
+		}
 		$timeTo3 = emptyToNull($this->input->post('timeTo3'));
+		if ($timeTo3 == null)
+		{
+			$timeTo3 = 1;
+		}
 		$timeTo4 = emptyToNull($this->input->post('timeTo4'));
+		if ($timeTo4 == null)
+		{
+			$timeTo4 = 23;
+		}
 		$timeTo5 = emptyToNull($this->input->post('timeTo5'));
+		if ($timeTo5 == null)
+		{
+			$timeTo5 = 59;
+		}
 		$timeTo = $timeTo1."-".$timeTo2."-".$timeTo3." ".$timeTo4.":".$timeTo5;
 		$testResult = emptyToNull($this->input->post('testResult'));
 		$testStationName = emptyToNull($this->input->post('testStationName'));
@@ -112,7 +158,9 @@ class Cssj extends CW_Controller
 		}
 		//处理分页
 		$this->load->library('pagination');
-		$config['base_url'] = site_url('cssj/index/');
+		$config['full_tag_open'] = '<div class="locPage">';
+		$config['full_tag_close'] = '</div>';
+		$config['base_url'] = '';
 		$config['uri_segment'] = 3;
 		//取得符合条件信息条数
 		$tmpRes = $this->db->query("SELECT COUNT(*) num FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
