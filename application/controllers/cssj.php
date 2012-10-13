@@ -48,7 +48,6 @@ class Cssj extends CW_Controller
 		$timeTo4 = emptyToNull($this->input->post('timeTo4'));
 		$timeTo5 = emptyToNull($this->input->post('timeTo5'));
 		$timeTo = $timeTo1."-".$timeTo2."-".$timeTo3." ".$timeTo4.":".$timeTo5;
-		echo "$timeTo";
 		$testResult = emptyToNull($this->input->post('testResult'));
 		$testStationName = emptyToNull($this->input->post('testStationName'));
 		$productTypeName = emptyToNull($this->input->post('productTypeName'));
