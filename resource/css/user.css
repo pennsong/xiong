@@ -13,6 +13,11 @@ span.cldnH1 {
 	font-family: 'times new roman';
 	font-size: 26px;
 }
+span.cldnH2 {
+	font-family: 'times new roman';
+	font-size: 20px;
+	color: #948a54;
+}
 
 #navtabs {
 	background: #eeece1;

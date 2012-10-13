@@ -8,6 +8,20 @@
 		width: 300px;
 		height: 200px;
 	}
+	.locPass {
+		color: black;
+		background-color: green;
+	}
+	.locFail {
+		color: black;
+		background-color: red;
+	}
+	.locLong {
+		width: 40px;
+	}
+	.locShort {
+		width: 20px;
+	}
 </style>
 <!--{/block}-->
 <!--{block name=subScript}-->
@@ -36,9 +50,30 @@
 		<div class="span-5">
 			时间:
 		</div>
-		<input type="text" name="timeFrom" value="{$smarty.post.timeFrom|default:''}"/>
-		至
-		<input type="text" name="timeTo" value="{$smarty.post.timeTo|default:''}"/>
+		<input class="locLong" type="text" name="timeFrom1" value="{$smarty.post.timeFrom1|default:''}"/>
+		年
+		<input class="locShort" type="text" name="timeFrom2" value="{$smarty.post.timeFrom2|default:''}"/>
+		月
+		<input class="locShort" type="text" name="timeFrom3" value="{$smarty.post.timeFrom3|default:''}"/>
+		日
+		<input class="locShort" type="text" name="timeFrom4" value="{$smarty.post.timeFrom4|default:''}"/>
+		时
+		<input class="locShort" type="text" name="timeFrom5" value="{$smarty.post.timeFrom5|default:''}"/>
+		分
+		<br>
+		<div class="span-5">
+			至:
+		</div>
+		<input class="locLong" type="text" name="timeTo1" value="{$smarty.post.timeTo1|default:''}"/>
+		年
+		<input class="locShort" type="text" name="timeTo2" value="{$smarty.post.timeTo2|default:''}"/>
+		月
+		<input class="locShort" type="text" name="timeTo3" value="{$smarty.post.timeTo3|default:''}"/>
+		日
+		<input class="locShort" type="text" name="timeTo4" value="{$smarty.post.timeTo4|default:''}"/>
+		时
+		<input class="locShort" type="text" name="timeTo5" value="{$smarty.post.timeTo5|default:''}"/>
+		分
 		<br>
 		<div class="span-5">
 			测试结果:
@@ -70,6 +105,7 @@
 </div>
 <div id="imgDiv" class="prepend-1 span-31 last">
 </div>
+<hr>
 <div class="prepend-1 span-63 last">
 	测试数据查询
 </div>
@@ -121,7 +157,9 @@
 			{$productTest['sn']}
 		</div>
 		<div class="span-4">
-			{$productTest['result']}
+			{if $productTest['result'] == 0} <span class="locFail">Fail</span>
+			{elseif $productTest['result'] == 1} <span class="locPass">Pass</span>
+			{/if}
 		</div>
 		<div class="span-2">
 			<a class="detail" href="{$productTest['id']}">详情</a>

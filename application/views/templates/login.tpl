@@ -104,7 +104,7 @@
 	<div class="locSecond prepend-2 span-56 append-2 last">
 		<span class="locH2">欢迎回来</span>
 		<hr>
-		<div class="span-28">
+		<div class="span-27 append-1">
 			{$noticeBody|default:'暂无内容'}
 		</div>
 		<div class="locBlue span-28 last">
@@ -139,7 +139,7 @@
 					</div>
 				</div>
 				<div class="clear prepend-1">
-					<div class="inline span-3">
+					<div class="inline span-5">
 						<button id="loginButton" class="button1" type="submit">
 							登录
 						</button>

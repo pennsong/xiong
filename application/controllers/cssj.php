@@ -34,10 +34,21 @@ class Cssj extends CW_Controller
 		return preg_match($pattern, $time);
 	}
 
-	function index($offset = 0, $limit = 10)
+	function index($offset = 0, $limit = 30)
 	{
-		$timeFrom = emptyToNull($this->input->post('timeFrom'));
-		$timeTo = emptyToNull($this->input->post('timeTo'));
+		$timeFrom1 = emptyToNull($this->input->post('timeFrom1'));
+		$timeFrom2 = emptyToNull($this->input->post('timeFrom2'));
+		$timeFrom3 = emptyToNull($this->input->post('timeFrom3'));
+		$timeFrom4 = emptyToNull($this->input->post('timeFrom4'));
+		$timeFrom5 = emptyToNull($this->input->post('timeFrom5'));
+		$timeFrom = $timeFrom1."-".$timeFrom2."-".$timeFrom3." ".$timeFrom4.":".$timeFrom5;
+		$timeTo1 = emptyToNull($this->input->post('timeTo1'));
+		$timeTo2 = emptyToNull($this->input->post('timeTo2'));
+		$timeTo3 = emptyToNull($this->input->post('timeTo3'));
+		$timeTo4 = emptyToNull($this->input->post('timeTo4'));
+		$timeTo5 = emptyToNull($this->input->post('timeTo5'));
+		$timeTo = $timeTo1."-".$timeTo2."-".$timeTo3." ".$timeTo4.":".$timeTo5;
+		echo "$timeTo";
 		$testResult = emptyToNull($this->input->post('testResult'));
 		$testStationName = emptyToNull($this->input->post('testStationName'));
 		$productTypeName = emptyToNull($this->input->post('productTypeName'));
@@ -107,9 +118,9 @@ class Cssj extends CW_Controller
 		//取得符合条件信息条数
 		$tmpRes = $this->db->query("SELECT COUNT(*) num FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn);
 		$config['total_rows'] = $tmpRes->first_row()->num;
-		$config['per_page'] = '10';
+		$config['per_page'] = $limit;
 		$this->pagination->initialize($config);
-		$tmpRes = $this->db->query("SELECT a.id, a.testTime, a.testStation, a.tester, a.productType, a.sn, a.result, b.name testStationName, c.employeeId, d.name productTypeName FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn." LIMIT ?, ?", array(
+		$tmpRes = $this->db->query("SELECT a.id, a.testTime, a.testStation, a.tester, a.productType, a.sn, a.result, b.name testStationName, c.employeeId, d.name productTypeName FROM productTestInfo a JOIN testStation b ON a.testStation = b.id JOIN tester c ON a.tester = c.id JOIN productType d ON a.productType = d.id WHERE 1".$sqlTimeFrom.$sqlTimeTo.$sqlTestResult.$sqlTestStationName.$sqlProductTypeName.$sqlEmployeeId.$sqlSn." ORDER BY a.testTime DESC LIMIT ?, ?", array(
 			(int)$offset,
 			(int)$limit
 		));

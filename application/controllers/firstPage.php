@@ -75,12 +75,13 @@ class firstPage extends CW_Controller
 		$crud = new grocery_CRUD();
 		$crud->set_theme('datatables');
 		$crud->required_fields('name', 'employeeId', 'testRight', 'skillLevel', 'department');
-		$crud->display_as('name', '姓名')->display_as('employeeId', '员工号')->display_as('testRight', '测试权限')->display_as('skillLevel', '技能级别')->display_as('department', '所属部门');
+		$crud->display_as('name', '姓名')->display_as('password', '密码')->display_as('employeeId', '工号')->display_as('testRight', '权限')->display_as('skillLevel', '技能')->display_as('department', '部门');
 		$crud->set_relation('testRight', 'testRight', 'name');
 		$crud->set_relation('skillLevel', 'skillLevel', 'name');
 		$crud->set_relation('department', 'department', 'name');
 		$crud->add_action('查看绩效', '', '', 'performance');
 		$crud->add_action('查看工作时间', '', '', 'workload');
+		$crud->unset_delete();
 		$output = $crud->render();
 		foreach ($output as $key=>$value)
 		{
