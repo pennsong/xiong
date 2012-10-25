@@ -204,7 +204,7 @@ class Login extends CW_Controller
 				xml_add_child($testStation, 'result', 'false');
 			}
 			//取得产品类型列表
-			$tmpRes = $this->db->query('SELECT * FROM productType ORDER BY id');
+			$tmpRes = $this->db->query('SELECT * FROM productType a JOIN (SELECT DISTINCT productType FROM producttypetestcase) b ON a.id = b.productType ORDER BY id');
 			if ($tmpRes->num_rows() > 0)
 			{
 				$productTestCase = xml_add_child($dom, 'product_test_case');
