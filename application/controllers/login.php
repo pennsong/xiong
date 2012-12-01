@@ -551,6 +551,20 @@ class Login extends CW_Controller
 		xml_print($dom);
 	}
 
+	private function _returnUploadOK2($str)
+	{
+		//test
+		echo $str;
+		//end test
+		$this->db->trans_commit();
+		$this->load->helper('xml');
+		$dom = xml_dom();
+		$uploadResult = xml_add_child($dom, 'uploadResult');
+		xml_add_child($uploadResult, 'result', 'true');
+		xml_add_child($uploadResult, 'info', 'success');
+		xml_print($dom);
+	}
+
 	private function _returnUploadFailed($err)
 	{
 		$this->load->helper('xml');
@@ -581,6 +595,278 @@ class Login extends CW_Controller
 		else
 		{
 			return FALSE;
+		}
+	}
+
+	public function uploadPimFile($username = null, $password = null)
+	{
+		if (PHP_OS == 'WINNT')
+		{
+			$uploadRoot = "D:\\project\\xiong\\assets\\uploadedSource\\pim";
+			$slash = "\\";
+		}
+		else if (PHP_OS == 'Darwin')
+		{
+			$uploadRoot = "/Library/WebServer/Documents/aptana/xiong/assets/uploadedSource/pim";
+			$slash = "/";
+		}
+		else
+		{
+			$this->_returnUploadFailed("错误的服务器操作系统");
+			return;
+		}
+		/*		if ($this->_checkTestUser($username, $password) === FALSE)
+		 {
+		 $this->_returnUploadFailed("错误的用户名密码");
+		 return;
+		 }
+		 else
+		 {*/
+		//保存上传文件
+		$file_temp = $_FILES['Filedata']['tmp_name'];
+		date_default_timezone_set('Asia/Shanghai');
+		$dateStamp = date("Y_m_d");
+		$dateStampFolder = $uploadRoot.$slash.$dateStamp;
+		if (file_exists($dateStampFolder) && is_dir($dateStampFolder))
+		{
+			//do nothing
+		}
+		else
+		{
+			if (mkdir($dateStampFolder))
+			{
+			}
+			else
+			{
+				$this->_returnUploadFailed("日期目录创建失败");
+				return;
+			}
+		}
+		$file_name = $dateStamp.$slash.$_FILES['Filedata']['name'];
+		//complete upload
+		//解压前先删除旧文件
+		if (file_exists($uploadRoot.$slash.$file_name))
+		{
+			unlink($uploadRoot.$slash.$file_name);
+		}
+		$filestatus = move_uploaded_file($file_temp, $uploadRoot.$slash.$file_name);
+		if (!$filestatus)
+		{
+			$this->_returnUploadFailed("文件:".$_FILES['Filedata']['name']."上传失败");
+			return;
+		}
+		//解压缩文件
+		//解压前先删除旧文件夹
+		$this->delDirAndFile($uploadRoot.$slash.substr($file_name, 0, -4));
+		if (PHP_OS == 'WINNT')
+		{
+			exec('C:\Progra~1\7-Zip\7z.exe x '.$uploadRoot.$slash.$file_name.' -o'.$uploadRoot.$slash.substr($file_name, 0, -4).' -y', $info);
+		}
+		else if (PHP_OS == 'Darwin')
+		{
+			$zip = new ZipArchive;
+			if ($zip->open($uploadRoot.$slash.$file_name) === TRUE)
+			{
+				$zip->extractTo($uploadRoot.$slash.substr($file_name, 0, -4).$slash);
+				$zip->close();
+				//关闭处理的zip文件
+			}
+			else
+			{
+				$this->_returnUploadFailed("文件:".$_FILES['Filedata']['name']."打开失败");
+				return;
+			}
+		}
+		//解析文件并插入数据库
+		$this->db->trans_start();
+		//初始化pim_label(工单号)
+		$pim_label = substr($file_name, strrpos($file_name, $slash) + 1, -4);
+		//对pim_label插入数据
+		$tmpSql = "INSERT INTO `pim_label`(`name`) ";
+		$tmpSql .= "VALUES ('".$pim_label."')";
+		$tmpRes = $this->db->query($tmpSql);
+		if ($tmpRes === TRUE)
+		{
+			//取得pim_label id
+			$pim_label = $this->db->insert_id();
+			//取得所有csv文件列表
+			//get all image files with a .cvs extension.
+			$csvArray = glob($uploadRoot.$slash.substr($file_name, 0, -4).$slash."*.csv");
+			//print each file name
+			foreach ($csvArray as $csv)
+			{
+				//解析单个csv文件
+				//从csv文件名取得序列号
+				$ser_num = substr($csv, strrpos($csv, $slash) + 1, -4);
+				if ($file_content = file_get_contents($csv))
+				{
+					//去除csv文件引号中的换行符号
+					$pattern = '/"([0-9.;\-]+)\r\n"/';
+					$replacement = '"${1}"';
+					$file_content = preg_replace($pattern, $replacement, $file_content);
+					//一个line表示一个组
+					$lines = explode("\n", str_replace("\r", "", $file_content));
+					//删除lines中由最后一个回车换行造成的空元素
+					array_pop($lines);
+					$firstGroup = true;
+					$groupTestTime = 0;
+					foreach ($lines as $line)
+					{
+						$lineContentArray = explode(",", $line);
+						$lineContentArray = $this->_trimQuoterMark($lineContentArray);
+						//如果是第一个组,使用此组值来初始化pim_ser_num中的值
+						if ($firstGroup)
+						{
+							$tmpSql = "INSERT INTO `pim_ser_num`(`model`, `ser_num`, `pim_label`, `col1`, `col2`, `col3`, `col4`, `col5`, `col6`, `col7`, `col8`, `col9`, `col10`, `col11`, `col12`, `col13`) VALUES (?, ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+							$tmpRes = $this->db->query($tmpSql, array(
+								$lineContentArray[11],
+								$ser_num,
+								$pim_label,
+								$lineContentArray[0],
+								$lineContentArray[1],
+								$lineContentArray[2],
+								$lineContentArray[3],
+								$lineContentArray[4],
+								$lineContentArray[5],
+								$lineContentArray[6],
+								$lineContentArray[7],
+								$lineContentArray[8],
+								$lineContentArray[9],
+								$lineContentArray[10],
+								$lineContentArray[13],
+								$lineContentArray[15]
+							));
+							if ($tmpRes === TRUE)
+							{
+								//取得pim_ser_num id
+								$pim_ser_num = $this->db->insert_id();
+								//插入pim_ser_num_data
+							}
+							else
+							{
+								$this->db->trans_rollback();
+								$this->_returnUploadFailed("插入pim_ser_num失败!原始数据:$csv中$line");
+								return;
+							}
+						}
+						//取得当前组最近时间
+						$tmpTestTime = date('Y-m-d H:i:s', strtotime($lineContentArray[12]));
+						$groupTestTime = ($tmpTestTime > $groupTestTime) ? $tmpTestTime : $groupTestTime;
+						//检查对应组图片是否存在
+						$jpgFile = $uploadRoot.$slash.substr($file_name, 0, -4).$slash.$ser_num.'_'.(str_replace(' ', '', $lineContentArray[12])).".jpg";
+						if (!file_exists($jpgFile))
+						{
+							$this->db->trans_rollback();
+							$this->_returnUploadFailed("插入pim_ser_num_group时对应图片没有找到!原始数据:{$csv}中{$line}中");
+							return;
+						}
+						//插入pim_ser_num_group
+						$tmpSql = "INSERT INTO `pim_ser_num_group`(`pim_ser_num`, `test_time`) VALUES (?, ?)";
+						$tmpRes = $this->db->query($tmpSql, array(
+							$pim_ser_num,
+							$tmpTestTime
+						));
+						if ($tmpRes === TRUE)
+						{
+							//取得pim_ser_num_group id
+							$pim_ser_num_group = $this->db->insert_id();
+							//插入pim_ser_num_group_data数据
+							for ($i = 16; $i < count($lineContentArray); $i++)
+							{
+								$tmpSql = "INSERT INTO `pim_ser_num_group_data`(`pim_ser_num_group`, `frequency`, `value`) VALUES ($pim_ser_num_group,?,?)";
+								$tmpRes = $this->db->query($tmpSql, explode(';', $lineContentArray[$i]));
+								if ($tmpRes === TRUE)
+								{
+								}
+								else
+								{
+									$this->db->trans_rollback();
+									$this->_returnUploadFailed("插入pim_ser_num_group_data失败!原始数据:$csv中$line中".$lineContentArray[$i]);
+									return;
+								}
+							}
+						}
+						else
+						{
+							$this->db->trans_rollback();
+							$this->_returnUploadFailed("插入pim_ser_num_group失败!原始数据:$csv中$line");
+							return;
+						}
+						//设置本组测试时间
+						$tmpSql = "UPDATE `pim_ser_num_group` SET `test_time`=? WHERE id = ?";
+						$tmpRes = $this->db->query($tmpSql, array(
+							$groupTestTime,
+							$pim_ser_num_group
+						));
+						if ($tmpRes)
+						{
+						}
+						else
+						{
+							$this->db->trans_rollback();
+							$this->_returnUploadFailed("更新pim_ser_num_group测试时间失败!原始数据:$csv中$line");
+							return;
+						}
+						$firstGroup = false;
+					}
+				}
+				else
+				{
+					$this->db->trans_rollback();
+					$this->_returnUploadFailed("打开文件$csv失败!");
+					return;
+				}
+			}
+			$this->_returnUploadOk();
+			return;
+		}
+		else
+		{
+			$this->db->trans_rollback();
+			$this->_returnUploadFailed("创建工单号$pim_label失败!");
+			return;
+		}
+	}
+
+	//去除包含数组元素的引号
+	private function _trimQuoterMark($array)
+	{
+		foreach ($array as &$item)
+		{
+			$item = substr($item, 1, -1);
+		}
+		return $array;
+	}
+
+	//循环删除目录和文件函数
+	private function delDirAndFile($dirName)
+	{
+		if (PHP_OS == 'WINNT')
+		{
+			$slash = "\\";
+		}
+		else if (PHP_OS == 'Darwin')
+		{
+			$slash = "/";
+		}
+		if ($handle = opendir($dirName))
+		{
+			while (false !== ($item = readdir($handle)))
+			{
+				if ($item != "." && $item != "..")
+				{
+					if (is_dir($dirName.$slash.$item))
+					{
+						delDirAndFile($dirName.$slash.$item);
+					}
+					else
+					{
+						unlink($dirName.$slash.$item);
+					}
+				}
+			}
+			closedir($handle);
+			rmdir($dirName);
 		}
 	}
 
