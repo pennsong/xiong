@@ -551,20 +551,6 @@ class Login extends CW_Controller
 		xml_print($dom);
 	}
 
-	private function _returnUploadOK2($str)
-	{
-		//test
-		echo $str;
-		//end test
-		$this->db->trans_commit();
-		$this->load->helper('xml');
-		$dom = xml_dom();
-		$uploadResult = xml_add_child($dom, 'uploadResult');
-		xml_add_child($uploadResult, 'result', 'true');
-		xml_add_child($uploadResult, 'info', 'success');
-		xml_print($dom);
-	}
-
 	private function _returnUploadFailed($err)
 	{
 		$this->load->helper('xml');
