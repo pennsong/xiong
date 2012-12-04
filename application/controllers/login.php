@@ -779,10 +779,10 @@ class Login extends CW_Controller
 							return;
 						}
 						//设置本组测试时间
-						$tmpSql = "UPDATE `pim_ser_num_group` SET `test_time`=? WHERE id = ?";
+						$tmpSql = "UPDATE `pim_ser_num` SET `test_time`=? WHERE id = ?";
 						$tmpRes = $this->db->query($tmpSql, array(
 							$groupTestTime,
-							$pim_ser_num_group
+							$pim_ser_num
 						));
 						if ($tmpRes)
 						{
